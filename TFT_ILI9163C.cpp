@@ -32,6 +32,16 @@
 		if ((_mosi == 0 || _mosi == 21) && (_sclk == 20)) _useSPI1 = true;
 		TFT_ILI9163C_DISP = d;
 	}
+	#elif defined(ARDUINO_ARCH_STM32L0) //RHF76-052
+	TFT_ILI9163C::TFT_ILI9163C(const enum ILI9163C_dispType d,const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin)
+	{
+		_cs   = cspin;
+		_dc   = dcpin;
+		_rst  = rstpin;
+		_useSPI1 = true;
+		TFT_ILI9163C_DISP = d;
+	}
+
 	#else //All the rest
 	TFT_ILI9163C::TFT_ILI9163C(const enum ILI9163C_dispType d,const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin)
 	{
@@ -62,6 +72,14 @@
 		_useSPI1 = false;
 		if ((_mosi == 0 || _mosi == 21) && (_sclk == 20)) _useSPI1 = true;
 	}
+	#elif defined(ARDUINO_ARCH_STM32L0) //RHF76-052
+	TFT_ILI9163C::TFT_ILI9163C(const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin)
+	{
+		_cs   = cspin;
+		_dc   = dcpin;
+		_rst  = rstpin;
+		_useSPI1 = true;
+	}	
 	#else //All the rest
 	TFT_ILI9163C::TFT_ILI9163C(const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin)
 	{
@@ -141,6 +159,14 @@ void TFT_ILI9163C::backlight(bool state)
 		//nop
 	}
 	#endif
+#elif defined(ARDUINO_ARCH_STM32L0)
+//-----------------------------------------Teensy LC
+	#if !defined (SPI_HAS_TRANSACTION)
+	void TFT_ILI9163C::setBitrate(uint32_t n)
+	{
+		//nop
+	}
+	#endif	
 #elif defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__)
 //-----------------------------------------Teensy 3.0 & 3.1 & 3.2 & Teensy (codename)3.4 and 3.5
 	#if !defined (SPI_HAS_TRANSACTION)
@@ -278,6 +304,18 @@ void TFT_ILI9163C::begin(bool avoidSPIinit)
 		digitalWriteFast(_cs,HIGH);
 	#endif
 		enableDataStream();
+#elif defined(ARDUINO_ARCH_STM32L0)//(arm) STM32L0 (preliminary)
+	pinMode(_dc, OUTPUT);
+	pinMode(_cs, OUTPUT);
+	if (_useSPI1){
+		if (!avoidSPIinit) SPI1.begin();
+		_useSPI1 = true; //confirm
+	} else {
+		if (!avoidSPIinit) SPI.begin();
+		_useSPI1 = false; //confirm
+	}
+		digitalWrite(_cs,HIGH);
+		enableDataStream();		
 #elif defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__)//(arm) Teensy 3.0, 3.1, 3.2
 	if ((_mosi == 11 || _mosi == 7) && (_sclk == 13 || _sclk == 14)) {
         SPI.setMOSI(_mosi);
@@ -2480,6 +2518,18 @@ void TFT_ILI9163C::_charLineRender(
 			}
 		}
 	}
+#elif defined(ARDUINO_ARCH_STM32L0)
+	void TFT_ILI9163C::_pushColors_cont(uint16_t data,uint16_t times)
+	{
+		enableDataStream();
+		while(times--) {
+			if (_useSPI1){
+				SPI1.transfer16(data);
+			} else {
+				SPI.transfer16(data);
+			}
+		}
+	}	
 #elif defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__)
 	void TFT_ILI9163C::_pushColors_cont(uint16_t data,uint16_t times)
 	{

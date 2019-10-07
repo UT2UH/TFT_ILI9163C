@@ -22,9 +22,9 @@ Default: #include "../_display/TFT_ILI9163C_RED_PCB_OLD.h"
 (uncomment just one below...)
 ----------------------------------------------------------------------------------*/
 #if !defined (TFT_ILI9163C_INSTANCES)
-	//#include "../_display/TFT_ILI9163C_BLACK_PCB.h"
+	#include "../_display/TFT_ILI9163C_BLACK_PCB.h"
 	//#include "../_display/TFT_ILI9163C_RED_PCB_OLD.h"
-	#include "../_display/TFT_ILI9163C_RED_PCB_YPIN.h"//the infamous 2016 yellow pin/red pcb one
+	//#include "../_display/TFT_ILI9163C_RED_PCB_YPIN.h"//the infamous 2016 yellow pin/red pcb one
 	
 	//you can add further display files here but remember to add in TFT_ILI9163C_ALL.h as well
 	
@@ -80,7 +80,7 @@ Default:BLACK & WHITE
 - Teensy LC Fast CS Port option -
 Teensy LC optional Direct Port vs digitalWriteFast methods
 If you have any issues ONLY with Teensy LC and other SPI devices that share
-the same SPI lines try to comment the line nelow...
+the same SPI lines try to comment the line below...
 The library default uses Direct Port Manipulation (that it's slight faster)
 Default:uncommented
 ----------------------------------------------------------------------------------*/

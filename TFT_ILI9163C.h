@@ -145,6 +145,8 @@ class TFT_ILI9163C : public Print {
 			TFT_ILI9163C(const enum ILI9163C_dispType d, const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin=255,const uint8_t mosi=11,const uint8_t sclk=13);
 		#elif defined(__MKL26Z64__)
 			TFT_ILI9163C(const enum ILI9163C_dispType d, const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin=255,const uint8_t mosi=11,const uint8_t sclk=13);
+		#elif defined(ARDUINO_ARCH_STM32L0)
+			TFT_ILI9163C(const enum ILI9163C_dispType d, const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin=255);
 		#else
 			TFT_ILI9163C(const enum ILI9163C_dispType d, const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin=255);
 		#endif
@@ -154,6 +156,8 @@ class TFT_ILI9163C : public Print {
 			TFT_ILI9163C(const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin=255,const uint8_t mosi=11,const uint8_t sclk=13);
 		#elif defined(__MKL26Z64__)
 			TFT_ILI9163C(const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin=255,const uint8_t mosi=11,const uint8_t sclk=13);
+		#elif defined(ARDUINO_ARCH_STM32L0)
+			TFT_ILI9163C(const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin=255);			
 		#else
 			TFT_ILI9163C(const uint8_t cspin,const uint8_t dcpin,const uint8_t rstpin=255);
 		#endif
@@ -481,6 +485,64 @@ class TFT_ILI9163C : public Print {
 				*csportSet = cspinmask;
 			#endif
 		}
+
+/* --------------------------- ARM (STM32L0) ------------------------*/
+	#elif defined(ARDUINO_ARCH_STM32L0)
+		bool				_useSPI1;
+		uint8_t 			_cs;
+
+		void spiwrite(uint8_t c)
+		__attribute__((always_inline)) {
+			if (_useSPI1){
+				SPI1.transfer(c);
+			} else {
+				SPI.transfer(c);
+			}
+		}
+
+		void spiwrite16(uint16_t c)
+		__attribute__((always_inline)) {
+			if (_useSPI1){
+				SPI1.transfer16(c);
+			} else {
+				SPI.transfer16(c);
+			}
+		}
+
+		void enableCommandStream(void)
+		__attribute__((always_inline)) {
+			digitalWrite(_dc,LOW);
+		}
+
+		void enableDataStream(void)
+		__attribute__((always_inline)) {
+			digitalWrite(_dc,HIGH);
+		}
+
+		void startTransaction(void)
+		__attribute__((always_inline)) {
+			if (_useSPI1){
+				SPI1.beginTransaction(_ILI9163CSPI);
+			} else {
+				SPI.beginTransaction(_ILI9163CSPI);
+			}
+			digitalWrite(_cs,LOW);
+		}
+
+		void endTransaction(void)
+		__attribute__((always_inline)) {
+			if (_useSPI1){
+				SPI1.endTransaction();
+			} else {
+				SPI.endTransaction();
+			}
+		}
+
+		void disableCS(void)
+		__attribute__((always_inline)) {
+			digitalWrite(_cs,HIGH);
+		}
+
 
 /* ----------------- ARM (Teensy 3.0, Teensy 3.1, Teensy 3.2), Teensy (codename)3.4 and 3.5 --------*/
 	#elif defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || defined(__MK66FX1M0__)
