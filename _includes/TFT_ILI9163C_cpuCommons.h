@@ -47,9 +47,9 @@
 			#define _SPI_MULTITRANSFER	//enable burst multy byte transfer
 		#endif
 	#elif defined(ARDUINO_ARCH_STM32L0)
-		#define _smCharType	unsigned char
+		#define _smCharType	uint8_t
 		#if defined(SPI_HAS_TRANSACTION)
-			const uint32_t TFT_ILI9163C_SPI_SPEED 			= 24000000;
+			const uint32_t TFT_ILI9163C_SPI_SPEED 			= 4000000;
 		#endif		
 	#else//all the rest
 		#define _smCharType	uint8_t

@@ -160,7 +160,7 @@ void TFT_ILI9163C::backlight(bool state)
 	}
 	#endif
 #elif defined(ARDUINO_ARCH_STM32L0)
-//-----------------------------------------Teensy LC
+//----------------------------------------- RHF76-052
 	#if !defined (SPI_HAS_TRANSACTION)
 	void TFT_ILI9163C::setBitrate(uint32_t n)
 	{
@@ -304,15 +304,15 @@ void TFT_ILI9163C::begin(bool avoidSPIinit)
 		digitalWriteFast(_cs,HIGH);
 	#endif
 		enableDataStream();
-#elif defined(ARDUINO_ARCH_STM32L0)//(arm) STM32L0 (preliminary)
+#elif defined(ARDUINO_ARCH_STM32L0)//(arm) STM32L0
 	pinMode(_dc, OUTPUT);
 	pinMode(_cs, OUTPUT);
 	if (_useSPI1){
 		if (!avoidSPIinit) SPI1.begin();
-		_useSPI1 = true; //confirm
+		_useSPI1 = true; //confirm			
 	} else {
 		if (!avoidSPIinit) SPI.begin();
-		_useSPI1 = false; //confirm
+		_useSPI1 = false; //confirm		
 	}
 		digitalWrite(_cs,HIGH);
 		enableDataStream();		
